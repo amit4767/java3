@@ -40,34 +40,34 @@ public class AccountsService {
     }
 
     public synchronized void transferMoney(TransferDetails transferDetails) {
-        Account accountfrom = this.accountsRepository.getAccount(transferDetails.getAccountFromId());
-        Account accountto = this.accountsRepository.getAccount(transferDetails.getAccountToId());
+        Account accountFrom = this.accountsRepository.getAccount(transferDetails.getAccountFromId());
+        Account accountTo = this.accountsRepository.getAccount(transferDetails.getAccountToId());
         BigDecimal transferAmount = transferDetails.getTransferAmount();
-        verifyTransferDetails(accountfrom, accountto, transferAmount);
-        transferMoneyImpl.transferMoney(accountfrom, accountto, transferAmount);
-        emailNotificationService.notifyAboutTransfer(accountfrom, "Your account has been debited with " + transferAmount);
-        emailNotificationService.notifyAboutTransfer(accountto, "Your account has been credited with " + transferAmount);
+        verifyTransferDetails(accountFrom, accountTo, transferAmount);
+        transferMoneyImpl.transferMoney(accountFrom, accountTo, transferAmount);
+        emailNotificationService.notifyAboutTransfer(accountFrom, "Your account has been debited with " + transferAmount);
+        emailNotificationService.notifyAboutTransfer(accountTo, "Your account has been credited with " + transferAmount);
 
     }
 
-    private void verifyTransferDetails(Account accountfrom, Account accountto, BigDecimal transferAmount) {
+    private void verifyTransferDetails(Account accountFrom, Account accountTo, BigDecimal transferAmount) {
 
-        if (null != accountfrom) {
-            if (null != accountto) {
-                if (!accountfrom.getAccountId().equalsIgnoreCase(accountto.getAccountId())) {
-                    checkValidAmount(accountfrom.getBalance(), transferAmount);
+        if (null != accountFrom) {
+            if (null != accountTo) {
+                if (!accountFrom.getAccountId().equalsIgnoreCase(accountTo.getAccountId())) {
+                    checkValidAmount(accountFrom.getBalance(), transferAmount);
                 } else {
                     log.error(" From and to account id value is same");
                     throw new InvalidAccountDetailsException("Can't transfer money between same account id ");
                 }
 
             } else {
-                log.error(" Not able to find account to Id information in database  of id =" + accountto.getAccountId());
-                throw new InvalidAccountDetailsException("This " + accountto + " Account To  id  not present ");
+                log.error(" Not able to find account to Id information in database  of id =" + accountTo.getAccountId());
+                throw new InvalidAccountDetailsException("This " + accountTo + " Account To  id  not present ");
             }
         } else {
-            log.error(" Not able to find account From Id information in database  of id =" + accountfrom.getAccountId());
-            throw new InvalidAccountDetailsException("This " + accountfrom + " Account From  id  not present ");
+            log.error(" Not able to find account From Id information in database  of id =" + accountFrom.getAccountId());
+            throw new InvalidAccountDetailsException("This " + accountFrom + " Account From  id  not present ");
         }
 
 
